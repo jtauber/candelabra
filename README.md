@@ -2,6 +2,8 @@ Candelabra is a browser-based time tracker capable of tracking time on
 multiple projects and providing for quick switching between which timer
 is running.
 
+![screenshot](http://jtauber.github.com/candelabra/screenshot.png)
+
 It is a single HTML file (using hosted versions of jQuery and Bootstrap)
 that uses localStorage for persisting logs between browser refreshes but
 it is not intended for long-running time recording. The expected use case
