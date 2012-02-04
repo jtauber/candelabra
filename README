@@ -8,4 +8,7 @@ it is not intended for long-running time recording. The expected use case
 is that times would be logged to some other system occasionally and cleared
 from Candelabra.
 
+For maximum enjoyment, make your browser as narrow as psosible and turn off
+as much chrome as you can (toolbar, status bar, etc).
+
 As of version 0.1, Candelabra has been tested on Safari and Chrome.
