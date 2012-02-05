@@ -19,3 +19,13 @@ as much chrome as you can (toolbar, status bar, etc).
 until a minute has passed.
 
 As of version 0.1, Candelabra has been tested on Safari and Chrome.
+
+## Change Log
+
+### 0.1
+
+- initial release
+
+### 0.2 (in progress)
+
+- removed external Bootstrap dependency
