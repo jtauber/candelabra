@@ -18,7 +18,7 @@ as much chrome as you can (toolbar, status bar, etc).
 **NOTE**: time resolution is in minutes so don't expect the timer to change
 until a minute has passed.
 
-As of version 0.1, Candelabra has been tested on Safari and Chrome.
+As of version 0.2, Candelabra has been tested on Safari, Chrome and Firefox.
 
 ## Authors
 
