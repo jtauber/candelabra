@@ -31,4 +31,6 @@ As of version 0.1, Candelabra has been tested on Safari and Chrome.
 - removed external Bootstrap dependency
 - added gradient to project block
 - fixed scrolling issues when projects extend too far
+- added support for mobile devices
+- added iOS application mode when saved to home screen
 
