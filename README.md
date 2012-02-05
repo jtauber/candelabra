@@ -4,7 +4,7 @@ is running.
 
 ![screenshot](http://jtauber.github.com/candelabra/screenshot.png)
 
-It is a single HTML file (using hosted versions of jQuery and Bootstrap)
+It is a single HTML file (using hosted versions of jQuery)
 that uses localStorage for persisting logs between browser refreshes but
 it is not intended for long-running time recording. The expected use case
 is that times would be logged to some other system occasionally and cleared
