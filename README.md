@@ -20,6 +20,11 @@ until a minute has passed.
 
 As of version 0.1, Candelabra has been tested on Safari and Chrome.
 
+## Authors
+
+- James Tauber
+- Luke Hatcher
+
 ## Change Log
 
 ### 0.1
