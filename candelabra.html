@@ -1,15 +1,52 @@
 <!DOCTYPE html>
-<!-- James Tauber's Candelabra v0.1 / https://github.com/jtauber/candelabra -->
+<!-- James Tauber's Candelabra v0.2 / https://github.com/jtauber/candelabra -->
 <html lang="en">
     <head>
         <meta charset="utf-8" />
         <title>candelabra</title>
-        <link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css">
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="icon.png" />
+        <link rel="apple-touch-startup-image" href="splash.png" />
         <style>
             html, body {
                 height: 100%;
             }
+            table, tr, td {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                outline: 0;
+                font-size: 100%;
+                vertical-align: baseline;
+                background: transparent;
+            }
+            body {
+                margin: 0;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 13px;
+                line-height: 18px;
+                color: #333;
+            }
+            .pull-left {
+                float: left;
+            }
+            .pull-right {
+                float: right;
+            }
+            .row::before, .row::after {
+                display: table;
+                content: "";
+            }
+            .row::after {
+                clear: both;
+            }
+            ul.unstyled {
+                list-style: none;
+                padding: 0;
+            }
             .row {
+                clear: both;
                 margin-left: 0;
             }
             .holder {
@@ -19,22 +56,30 @@
                 -moz-box-shadow: inset 0px 0px 40px 5px rgba(0, 0, 0, 0.5);
                 box-shadow: inset 0px 0px 40px 5px rgba(0, 0, 0, 0.5);
             }
+            .projects {
+                padding-bottom: 40px;
+                overflow: scroll;
+            }
             .project {
                 padding: 5px 10px;
                 border-top: 1px solid #EEE;
                 background: #DDD;
                 border-bottom: 1px solid #BBB;
                 color: #999;
+                background-color: #fafafa;
+                background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), color-stop(25%, #ffffff), to(#e6e6e6));
+                background-image: -webkit-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -moz-linear-gradient(top, #ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -ms-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -o-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-repeat: no-repeat;
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
             }
             .project:last-child {
                 -webkit-box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
                 -moz-box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
                 box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
-            }
-            .project.active {
-                background: #EEE;
-                border-top: 1px solid #FFF;
-                border-bottom: 1px solid #CCC;
             }
             .project-header {
                 font-size: 1.5em;
@@ -60,15 +105,11 @@
                 font-size: 9pt;
                 margin-bottom: 3px;
                 padding: 3px 6px;
-                background: #CCC;
-                color: #999;
+                background: #DDD;
+                color: #666;
                 -webkit-box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
                 -moz-box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
                 box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
-            }
-            .project.active .project-times li {
-                background: #DDD;
-                color: #666;
             }
             .project .project-name:before {
                 content: "\25B8 \A0";
@@ -82,23 +123,93 @@
             .bottom-bar {
                 background: #EEE;
                 padding: 5px 0px;
-                position: absolute;
+                position: fixed;
                 bottom: 0;
                 width: 100%;
                 -webkit-box-shadow: 0px -10px 10px 0px rgba(0, 0, 0, 0.5);
                 -moz-box-shadow: 0px -10px 10px 0px rgba(0, 0, 0, 0.5);
                 box-shadow: 0px -10px 10px 0px rgba(0, 0, 0, 0.5);
             }
+            .bottom-bar table {
+                width: 100%
+            }
+            .bottom-bar table td {
+                padding: 0 10px;
+            }
+            .bottom-bar table td.add-button-column {
+                width: 90px;
+            }
             .bottom-bar form {
                 margin: 0 5px;
             }
             .bottom-bar input[type=text] {
-                margin: 0 5px;
-                width: 280px;
+                width: 100%;
+                height: 18px;
+                padding: 4px;
+                font-size: 13px;
+                line-height: 18px;
+                color: #555;
+                border: 1px solid #CCC;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 3px;
+            }
+            .btn {
+                display: inline-block;
+                padding: 4px 10px 4px;
+                font-size: 13px;
+                line-height: 18px;
+                color: #333333;
+                text-align: center;
+                text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+                background-color: #fafafa;
+                background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), color-stop(25%, #ffffff), to(#e6e6e6));
+                background-image: -webkit-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -moz-linear-gradient(top, #ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -ms-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -o-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-repeat: no-repeat;
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
+                border: 1px solid #ccc;
+                border-bottom-color: #bbb;
+                -webkit-border-radius: 4px;
+                -moz-border-radius: 4px;
+                border-radius: 4px;
+                -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+                -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+                cursor: pointer;
+                *margin-left: .3em;
+            }
+            .btn:hover {
+                color: #333333;
+                text-decoration: none;
+                background-color: #e6e6e6;
+                background-position: 0 -15px;
+                -webkit-transition: background-position 0.1s linear;
+                -moz-transition: background-position 0.1s linear;
+                -ms-transition: background-position 0.1s linear;
+                -o-transition: background-position 0.1s linear;
+                transition: background-position 0.1s linear;
+            }
+            .btn:focus {
+              outline: thin dotted;
+              outline: 5px auto -webkit-focus-ring-color;
+              outline-offset: -2px;
+            }
+            .btn.active, .btn:active {
+              background-image: none;
+              -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+              -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+              box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+              background-color: #e6e6e6;
+              background-color: #d9d9d9 \9;
+              color: rgba(0, 0, 0, 0.5);
+              outline: 0;
             }
             .bottom-bar button {
-                margin: 0 5px;
-                float: right;
+                width: 100%;
             }
             .clear-times, .delete-project {
                 cursor: pointer;
@@ -119,8 +230,17 @@
         <div class="holder">
             <div class="projects"></div>
             <div class="bottom-bar">
-                <input id="add-project-name" type="text" name="projectName" />
-                <button id="add-project-button" class="btn">&plus; Project</button>
+                <table>
+                    <tr>
+                        <td class="project-name-column">
+                            <input id="add-project-name" type="text" name="projectName" />
+                        </td>
+                        <td class="add-button-column">
+                            <button id="add-project-button" class="btn">&plus; Project</button>
+                        </td>
+                    </tr>
+                </table>
+                </table>
             </div>
         </div>
         
@@ -279,7 +399,7 @@
                     updateTimers();
                 });
             }
-			function doUpdate() {
+            function doUpdate() {
                 updateTimers();
                 saveTimes();
             }
@@ -293,7 +413,7 @@
                     saveTimes();
                     loadTimes();
                 });
-				setInterval("doUpdate()", 10000);
+                setInterval("doUpdate()", 10000);
             });
         </script>
     </body>

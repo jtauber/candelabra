@@ -4,7 +4,7 @@ is running.
 
 ![screenshot](http://jtauber.github.com/candelabra/screenshot.png)
 
-It is a single HTML file (using hosted versions of jQuery and Bootstrap)
+It is a single HTML file (using hosted versions of jQuery)
 that uses localStorage for persisting logs between browser refreshes but
 it is not intended for long-running time recording. The expected use case
 is that times would be logged to some other system occasionally and cleared
@@ -19,3 +19,23 @@ as much chrome as you can (toolbar, status bar, etc).
 until a minute has passed.
 
 As of version 0.1, Candelabra has been tested on Safari and Chrome.
+
+## Authors
+
+- James Tauber
+- Luke Hatcher
+
+## Change Log
+
+### 0.1
+
+- initial release
+
+### 0.2 (in progress)
+
+- removed external Bootstrap dependency
+- added gradient to project block
+- fixed scrolling issues when projects extend too far
+- added support for mobile devices
+- added iOS application mode when saved to home screen
+
