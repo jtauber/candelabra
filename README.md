@@ -29,3 +29,5 @@ As of version 0.1, Candelabra has been tested on Safari and Chrome.
 ### 0.2 (in progress)
 
 - removed external Bootstrap dependency
+- added gradient to project block
+
