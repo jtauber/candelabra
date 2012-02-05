@@ -50,16 +50,20 @@
                 background: #DDD;
                 border-bottom: 1px solid #BBB;
                 color: #999;
+                background-color: #fafafa;
+                background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), color-stop(25%, #ffffff), to(#e6e6e6));
+                background-image: -webkit-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -moz-linear-gradient(top, #ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -ms-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -o-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-repeat: no-repeat;
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
             }
             .project:last-child {
                 -webkit-box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
                 -moz-box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
                 box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
-            }
-            .project.active {
-                background: #EEE;
-                border-top: 1px solid #FFF;
-                border-bottom: 1px solid #CCC;
             }
             .project-header {
                 font-size: 1.5em;
@@ -85,15 +89,11 @@
                 font-size: 9pt;
                 margin-bottom: 3px;
                 padding: 3px 6px;
-                background: #CCC;
-                color: #999;
+                background: #DDD;
+                color: #666;
                 -webkit-box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
                 -moz-box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
                 box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
-            }
-            .project.active .project-times li {
-                background: #DDD;
-                color: #666;
             }
             .project .project-name:before {
                 content: "\25B8 \A0";
