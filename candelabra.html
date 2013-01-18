@@ -402,15 +402,22 @@
                 updateTimers();
                 saveTimes();
             }
+            function addProject() {
+                var project = createProject($("#add-project-name").val());
+                $("#add-project-name").val("");
+                $(".projects").append(project);
+                saveTimes();
+                loadTimes();
+            }
             $(function() {
                 loadTimes();
                 updateTimers();
-                $("#add-project-button").on("click", function() {
-                    var project = createProject($("#add-project-name").val());
-                    $("#add-project-name").val("");
-                    $(".projects").append(project);
-                    saveTimes();
-                    loadTimes();
+                
+                $("#add-project-button").on("click", addProject);
+                $("#add-project-name").keydown(function(event) {
+                    if (event.which == 13) {
+                      addProject();
+                    }
                 });
                 setInterval("doUpdate()", 10000);
             });
