@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<!-- James Tauber's Candelabra v0.2 / https://github.com/jtauber/candelabra -->
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>candelabra</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="icon.png" />
+        <link rel="apple-touch-startup-image" href="splash.png" />
+        <style>
+            html, body {
+                height: 100%;
+            }
+            table, tr, td {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                outline: 0;
+                font-size: 100%;
+                vertical-align: baseline;
+                background: transparent;
+            }
+            body {
+                margin: 0;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 13px;
+                line-height: 18px;
+                color: #333;
+            }
+            .pull-left {
+                float: left;
+            }
+            .pull-right {
+                float: right;
+            }
+            .row::before, .row::after {
+                display: table;
+                content: "";
+            }
+            .row::after {
+                clear: both;
+            }
+            ul.unstyled {
+                list-style: none;
+                padding: 0;
+            }
+            .row {
+                clear: both;
+                margin-left: 0;
+            }
+            .holder {
+                min-height: 100%;
+                background-color: #333;
+                -webkit-box-shadow: inset 0px 0px 40px 5px rgba(0, 0, 0, 0.5);
+                -moz-box-shadow: inset 0px 0px 40px 5px rgba(0, 0, 0, 0.5);
+                box-shadow: inset 0px 0px 40px 5px rgba(0, 0, 0, 0.5);
+            }
+            .projects {
+                padding-bottom: 40px;
+            }
+            .project {
+                padding: 5px 10px;
+                border-top: 1px solid #EEE;
+                background: #DDD;
+                border-bottom: 1px solid #BBB;
+                color: #999;
+                background-color: #fafafa;
+                background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), color-stop(25%, #ffffff), to(#e6e6e6));
+                background-image: -webkit-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -moz-linear-gradient(top, #ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -ms-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -o-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-repeat: no-repeat;
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
+            }
+            .project:last-child {
+                -webkit-box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
+                -moz-box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
+                box-shadow: 0px 10px 10px 0px rgba(0, 0, 0, 0.5);
+            }
+            .project-header {
+                font-size: 1.5em;
+                line-height: 1.5em;
+            }
+            .project.active .project-header {
+                color: #000;
+                font-weight: bold;
+            }
+            .project-header .timer:hover {
+                cursor: pointer;
+            }
+            .project-name:hover {
+                cursor: pointer;
+            }
+            .project-times {
+                display: none;
+            }
+            .project-times ul {
+                margin: 5px 0 0;
+            }
+            .project-times li {
+                font-size: 9pt;
+                margin-bottom: 3px;
+                padding: 3px 6px;
+                background: #DDD;
+                color: #666;
+                -webkit-box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
+                -moz-box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
+                box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
+            }
+            .project .project-name:before {
+                content: "\25B8 \A0";
+            }
+            .project.open .project-times {
+                display: block;
+            }
+            .project.open .project-name:before {
+                content: "\25BE \A0";
+            }
+            .bottom-bar {
+                background: #EEE;
+                padding: 5px 0px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                -webkit-box-shadow: 0px -10px 10px 0px rgba(0, 0, 0, 0.5);
+                -moz-box-shadow: 0px -10px 10px 0px rgba(0, 0, 0, 0.5);
+                box-shadow: 0px -10px 10px 0px rgba(0, 0, 0, 0.5);
+            }
+            .bottom-bar table {
+                width: 100%
+            }
+            .bottom-bar table td {
+                padding: 0 10px;
+            }
+            .bottom-bar table td.add-button-column {
+                width: 90px;
+            }
+            .bottom-bar form {
+                margin: 0 5px;
+            }
+            .bottom-bar input[type=text] {
+                width: 100%;
+                height: 18px;
+                padding: 4px;
+                font-size: 13px;
+                line-height: 18px;
+                color: #555;
+                border: 1px solid #CCC;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 3px;
+            }
+            .btn {
+                display: inline-block;
+                padding: 4px 10px 4px;
+                font-size: 13px;
+                line-height: 18px;
+                color: #333333;
+                text-align: center;
+                text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+                background-color: #fafafa;
+                background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), color-stop(25%, #ffffff), to(#e6e6e6));
+                background-image: -webkit-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -moz-linear-gradient(top, #ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -ms-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: -o-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-image: linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
+                background-repeat: no-repeat;
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
+                border: 1px solid #ccc;
+                border-bottom-color: #bbb;
+                -webkit-border-radius: 4px;
+                -moz-border-radius: 4px;
+                border-radius: 4px;
+                -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+                -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+                cursor: pointer;
+                *margin-left: .3em;
+            }
+            .btn:hover {
+                color: #333333;
+                text-decoration: none;
+                background-color: #e6e6e6;
+                background-position: 0 -15px;
+                -webkit-transition: background-position 0.1s linear;
+                -moz-transition: background-position 0.1s linear;
+                -ms-transition: background-position 0.1s linear;
+                -o-transition: background-position 0.1s linear;
+                transition: background-position 0.1s linear;
+            }
+            .btn:focus {
+              outline: thin dotted;
+              outline: 5px auto -webkit-focus-ring-color;
+              outline-offset: -2px;
+            }
+            .btn.active, .btn:active {
+              background-image: none;
+              -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+              -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+              box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+              background-color: #e6e6e6;
+              background-color: #d9d9d9 \9;
+              color: rgba(0, 0, 0, 0.5);
+              outline: 0;
+            }
+            .bottom-bar button {
+                width: 100%;
+            }
+            .clear-times, .delete-project {
+                cursor: pointer;
+                float: right;
+            }
+            .separator {
+                float: right;
+            }
+            .clear-times:hover {
+                color: #666;
+            }
+            .delete-project:hover {
+                color: #C33;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="holder">
+            <div class="projects"></div>
+            <div class="bottom-bar">
+                <table>
+                    <tr>
+                        <td class="project-name-column">
+                            <input id="add-project-name" type="text" name="projectName" />
+                        </td>
+                        <td class="add-button-column">
+                            <button id="add-project-button" class="btn">&plus; Project</button>
+                        </td>
+                    </tr>
+                </table>
+                </table>
+            </div>
+        </div>
+        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            function updateTimers() {
+                $(".project").each(function() {
+                    var msecs = 0;
+                    $(".project-times li", this).each(function() {
+                        var start = $(this).data("start");
+                        var end = $(this).data("end");
+                        if (!end) {
+                            end = new Date();
+                        }
+                        msecs += end - start;
+                    });
+                    $(".timer", this).data("timer", msecs);
+                    var s = Math.round(msecs / 1000);
+                    var m = Math.floor(s / 60);
+                    var h = Math.floor(m / 60);
+                    var mm = m % 60;
+                    if (mm < 10) {
+                        mm = "0" + mm;
+                    }
+                    if (h < 10) {
+                        h = "0" + h;
+                    }
+                    var stime = h + ":" + mm;
+                    $(".timer", this).text(stime);
+                });
+            }
+            function createProject(projectName) {
+                var project = $("<div class='project'></div>");
+                var projectHeader = $("<div class='project-header row'><div class='pull-left project-name'>" + projectName + "</div><div class='pull-right timer' data-time='0'>00:00</div></div");
+                var projectTimes = $("<div class='project-times row'><ul class='unstyled'></ul><span class='delete-project'>delete project</span><span class='separator'>&nbsp;&bull;&nbsp;</span><span class='clear-times'>clear times</span></div>");
+                project.append(projectHeader);
+                project.append(projectTimes);
+                return project;
+            }
+            function createEntry(startDate, endDate) {
+                var sh = startDate.getHours();
+                if (sh < 10) {
+                    sh = "0" + sh;
+                }
+                var sm = startDate.getMinutes();
+                if (sm < 10) {
+                    sm = "0" + sm;
+                }
+                var timeRange = sh + ":" + sm + " &ndash; ";
+                if (endDate) {
+                    var eh = endDate.getHours();
+                    if (eh < 10) {
+                        eh = "0" + eh;
+                    }
+                    var em = endDate.getMinutes();
+                    if (em < 10) {
+                        em = "0" + em;
+                    }
+                    timeRange += eh + ":" + em;
+                }
+                var entry = $("<li>" + timeRange + "</li>").data("start", startDate.valueOf());
+                if (endDate) {
+                    entry.data("end", endDate.valueOf());
+                }
+                return entry;
+            }
+            function saveTimes() {
+                var times = new Array();
+                $(".project").each(function() {
+                    var projectName = $(".project-name", this).text();
+                    var isOpen = $(this).hasClass("open");
+                    var isActive = $(this).hasClass("active");
+                    var entries = new Array();
+                    $(".project-times li", this).each(function() {
+                        var start = $(this).data("start");
+                        var end = $(this).data("end");
+                        entries.push({start: start, end: end});
+                    });
+                    times.push({name: projectName, open: isOpen, active: isActive, entries:entries});
+                });
+                localStorage.setItem("times", JSON.stringify(times));
+            }
+            function loadTimes() {
+                $(".projects").html("");
+                var times = JSON.parse(localStorage.getItem("times"));
+                if (times) {
+                    $.each(times, function() {
+                        var projectName = this.name;
+                        project = createProject(projectName);
+                        var isOpen = this.open;
+                        var isActive = this.active;
+                        if (isOpen) {
+                            project.addClass("open");
+                        }
+                        if (isActive) {
+                            project.addClass("active");
+                        }
+                        var projectTimes = $(".project-times", project);
+                        $.each(this.entries, function() {
+                            var start = this.start;
+                            var end = this.end;
+                            var startDate = new Date(start);
+                            if (end) {
+                                endDate = new Date(end);
+                            } else {
+                                endDate = null;
+                            }
+                            var entry = createEntry(startDate, endDate);
+                            $("ul", projectTimes).append(entry);
+                        })
+                        project.append(projectTimes);
+                        $(".projects").append(project);
+                    });
+                }
+                $(".timer").on("click", function() {
+                    var previouslyActive = $(".project.active");
+                    var project = $(this).closest(".project");
+                    project.toggleClass("active");
+                    $(".project").not(project).removeClass("active");
+                    
+                    if (project.hasClass("active")) {
+                        var startDate = new Date();
+                        var entry = createEntry(startDate, null);
+                        $(".project-times ul", project).append(entry);
+                    }
+                    if (previouslyActive) {
+                        var endDate = new Date();
+                        var h = endDate.getHours();
+                        if (h < 10) {
+                            h = "0" + h;
+                        }
+                        var m = endDate.getMinutes();
+                        if (m < 10) {
+                            m = "0" + m;
+                        }
+                        $(".project-times ul li", previouslyActive).last().append(h + ":" + m).data("end", endDate.valueOf());
+                    }
+                    updateTimers();
+                    saveTimes();
+                });
+                $(".project-name").on("click", function() {
+                    var project = $(this).closest(".project");
+                    project.toggleClass("open");
+                    saveTimes();
+                });
+                $(".delete-project").on("click", function() {
+                    var project = $(this).closest(".project");
+                    project.remove();
+                    saveTimes();
+                });
+                $(".clear-times").on("click", function() {
+                    var project = $(this).closest(".project");
+                    $("ul", project).html("");
+                    saveTimes();
+                    project.removeClass("active");
+                    updateTimers();
+                });
+            }
+            function doUpdate() {
+                updateTimers();
+                saveTimes();
+            }
+            function addProject() {
+                var project = createProject($("#add-project-name").val());
+                $("#add-project-name").val("");
+                $(".projects").append(project);
+                saveTimes();
+                loadTimes();
+            }
+            $(function() {
+                loadTimes();
+                updateTimers();
+                
+                $("#add-project-button").on("click", addProject);
+                $("#add-project-name").keydown(function(event) {
+                    if (event.which == 13) {
+                      addProject();
+                    }
+                });
+                setInterval("doUpdate()", 10000);
+            });
+        </script>
+    </body>
+</html>
