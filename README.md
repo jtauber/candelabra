@@ -2,7 +2,7 @@
 multiple projects and providing for quick switching between which timer
 is running.
 
-![screenshot](http://jtauber.github.com/candelabra/screenshot.png)
+![screenshot](https://raw.github.com/jtauber/candelabra/master/screenshot.png)
 
 It is a single HTML file (using hosted versions of jQuery)
 that uses localStorage for persisting logs between browser refreshes but
@@ -10,7 +10,7 @@ it is not intended for long-running time recording. The expected use case
 is that times would be logged to some other system occasionally and cleared
 from Candelabra.
 
-You can run it directly from http://jtauber.github.com/candelabra/candelabra.html
+You can run it directly from http://jtauber.github.io/candelabra/candelabra.html
 
 For maximum enjoyment, make your browser as narrow as possible and turn off
 as much chrome as you can (toolbar, status bar, etc).
