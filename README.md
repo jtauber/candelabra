@@ -10,7 +10,7 @@ it is not intended for long-running time recording. The expected use case
 is that times would be logged to some other system occasionally and cleared
 from Candelabra.
 
-You can run it directly from https://jtauber.github.io/candelabra/candelabra.html
+You can run it directly from http://jtauber.github.io/candelabra/candelabra.html
 
 For maximum enjoyment, make your browser as narrow as possible and turn off
 as much chrome as you can (toolbar, status bar, etc).
