@@ -2,7 +2,7 @@
 multiple projects and providing for quick switching between which timer
 is running.
 
-![screenshot](http://jtauber.github.com/candelabra/screenshot.png)
+![screenshot](https://raw.github.com/jtauber/candelabra/master/screenshot.png)
 
 It is a single HTML file (using hosted versions of jQuery)
 that uses localStorage for persisting logs between browser refreshes but
