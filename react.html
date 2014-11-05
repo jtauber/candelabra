@@ -298,39 +298,6 @@
                     );
                 }
             });
-            var DeleteProject = React.createClass({
-                render: function () {
-                    return (
-                        <span className="delete-project">delete project</span>
-                    );
-                }
-            });
-            var Separator = React.createClass({
-                render: function () {
-                    return (
-                        <span className="separator">&nbsp;&bull;&nbsp;</span>
-                    );
-                }
-            });
-            var ClearTimes = React.createClass({
-                render: function () {
-                    return (
-                        <span className="clear-times">clear times</span>
-                    );
-                }
-            });
-            var ProjectFooter = React.createClass({
-                render: function () {
-                    return (
-                        <div className="project-times row">
-                            <TimeList times={this.props.project.times} />
-                            <DeleteProject />
-                            <Separator />
-                            <ClearTimes />
-                        </div>
-                    );
-                }
-            });
             var Project = React.createClass({
                 getInitialState: function () {
                     return {open: false};
@@ -338,21 +305,40 @@
                 handleProjectNameClick: function () {
                     this.setState({open: !this.state.open});
                 },
+                handleDeleteProject: function(e) {
+                    this.props.onDeleteProject(this.props.project);
+                },
+                handleClearTimes: function (e) {
+                    this.props.onClearTimes(this.props.project);
+                },
                 render: function () {
                     var classNameExtra = this.state.open ? "project open" : "project";
                     return (
                         <div className={classNameExtra}>
                             <ProjectHeader project={this.props.project} onProjectNameClick={this.handleProjectNameClick} />
-                            <ProjectFooter project={this.props.project} />
+                            <div className="project-times row">
+                                <TimeList times={this.props.project.times} />
+                                <span className="delete-project" onClick={this.handleDeleteProject}>delete project</span>
+                                <span className="separator">&nbsp;&bull;&nbsp;</span>
+                                <span className="clear-times" onClick={this.handleClearTimes}>clear times</span>
+                            </div>
                         </div>
                     );
                 }
             });
             var ProjectList = React.createClass({
+                handleClearTimes: function (project) {
+                    this.props.onClearTimes(project);
+                },
+                handleDeleteProject: function (project) {
+                    this.props.onDeleteProject(project);
+                },
                 render: function () {
-                    var projects = [];
+                    var projects = [],
+                        handleClearTimes = this.handleClearTimes,
+                        handleDeleteProject = this.handleDeleteProject;
                     this.props.projects.forEach(function (project) {
-                        projects.push(<Project project={project} />)
+                        projects.push(<Project project={project} onClearTimes={handleClearTimes} onDeleteProject={handleDeleteProject} />)
                     });
                     return (
                         <div className="projects">
@@ -369,10 +355,25 @@
                     PROJECTS.push({name: projectName, currentTime: "00:00", times: []});
                     this.setState({projects: PROJECTS});
                 },
+                handleDeleteProject: function (project) {
+                    PROJECTS.splice(PROJECTS.indexOf(project), 1);
+                    this.setState({projects: PROJECTS});
+                },
+                handleClearTimes: function (project) {
+                    var result = PROJECTS.some(function (row) {
+                        if (row.name === project.name) {
+                            row.times = [];
+                            return true;
+                        }
+                    });
+                    if (result) {
+                        this.setState({projects: PROJECTS});
+                    }
+                },
                 render: function () {
                     return (
                         <div className="holder">
-                            <ProjectList projects={this.state.projects} />
+                            <ProjectList projects={this.state.projects} onClearTimes={this.handleClearTimes} onDeleteProject={this.handleDeleteProject} />
                             <AddProjectForm onProjectSubmit={this.handleProjectSubmit} />
                         </div>
                     );
