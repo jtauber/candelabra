@@ -265,36 +265,10 @@
                     );
                 }
             });
-            var ProjectHeader = React.createClass({
-                handleClick: function (e) {
-                    this.props.onProjectNameClick();
-                },
-                render: function () {
-                    return (
-                        <div className="project-header row">
-                            <div className="pull-left project-name" onClick={this.handleClick}>{this.props.project.name}</div>
-                            <ProjectTimer currentTime={this.props.project.currentTime} />
-                        </div>
-                    );
-                }
-            });
             var TimeEntry = React.createClass({
                 render: function () {
                     return (
                         <li>{this.props.entry}</li>
-                    );
-                }
-            });
-            var TimeList = React.createClass({
-                render: function () {
-                    var entries = [];
-                    this.props.times.forEach(function (entry) {
-                        entries.push(<TimeEntry entry={entry} />)
-                    });
-                    return (
-                        <ul className="unstyled">
-                            {entries}
-                        </ul>
                     );
                 }
             });
@@ -312,37 +286,27 @@
                     this.props.onClearTimes(this.props.project);
                 },
                 render: function () {
-                    var classNameExtra = this.state.open ? "project open" : "project";
+                    var classNameExtra = this.state.open ? "project open" : "project",
+                        entries = [];
+                    this.props.project.times.forEach(function (entry) {
+                        entries.push(<TimeEntry entry={entry} />)
+                    });
                     return (
                         <div className={classNameExtra}>
-                            <ProjectHeader project={this.props.project} onProjectNameClick={this.handleProjectNameClick} />
+                            <div className="project-header row">
+                                <div className="pull-left project-name" onClick={this.handleProjectNameClick}>
+                                    {this.props.project.name}
+                                </div>
+                                <ProjectTimer currentTime={this.props.project.currentTime} />
+                            </div>
                             <div className="project-times row">
-                                <TimeList times={this.props.project.times} />
+                                <ul className="unstyled">
+                                    {entries}
+                                </ul>
                                 <span className="delete-project" onClick={this.handleDeleteProject}>delete project</span>
                                 <span className="separator">&nbsp;&bull;&nbsp;</span>
                                 <span className="clear-times" onClick={this.handleClearTimes}>clear times</span>
                             </div>
-                        </div>
-                    );
-                }
-            });
-            var ProjectList = React.createClass({
-                handleClearTimes: function (project) {
-                    this.props.onClearTimes(project);
-                },
-                handleDeleteProject: function (project) {
-                    this.props.onDeleteProject(project);
-                },
-                render: function () {
-                    var projects = [],
-                        handleClearTimes = this.handleClearTimes,
-                        handleDeleteProject = this.handleDeleteProject;
-                    this.props.projects.forEach(function (project) {
-                        projects.push(<Project project={project} onClearTimes={handleClearTimes} onDeleteProject={handleDeleteProject} />)
-                    });
-                    return (
-                        <div className="projects">
-                            {projects}
                         </div>
                     );
                 }
@@ -371,9 +335,17 @@
                     }
                 },
                 render: function () {
+                    var projects = [],
+                        handleClearTimes = this.handleClearTimes,
+                        handleDeleteProject = this.handleDeleteProject;
+                    this.state.projects.forEach(function (project) {
+                        projects.push(<Project project={project} onClearTimes={handleClearTimes} onDeleteProject={handleDeleteProject} />)
+                    });
                     return (
                         <div className="holder">
-                            <ProjectList projects={this.state.projects} onClearTimes={this.handleClearTimes} onDeleteProject={this.handleDeleteProject} />
+                            <div className="projects">
+                                {projects}
+                            </div>
                             <AddProjectForm onProjectSubmit={this.handleProjectSubmit} />
                         </div>
                     );
