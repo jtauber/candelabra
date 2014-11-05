@@ -228,6 +228,15 @@
     <body>
         <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.12.0/react.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/react/0.12.0/JSXTransformer.js"></script>
+        <script>
+            Array.prototype.getIndexBy = function (name, value) {
+                for (var i = 0; i < this.length; i++) {
+                    if (this[i][name] == value) {
+                        return i;
+                    }
+                }
+            }
+        </script>
         <script type="text/jsx">
             /** @jsx React.DOM */
             var AddProjectForm = React.createClass({
@@ -267,26 +276,55 @@
                  * [] === "00:00"
                  *
                  * NOTE: these are display values, the underlying data are js Date() objects
-                 *
-                 * Clicking on timer should:
-                 * 1. If it's active (has an end that is null), then set it to current time
-                 * 2. If it's inactive (has no times, or most recent end is not null):
-                 *    a. then add a new time entry with start as current time and end as null
-                 *    b. find any other project that might be active and mark it inactive by
-                 *       timestampping it's last end
                  */
+                formatMilliseconds: function(msecs) {
+                    var s = Math.round(msecs / 1000),
+                        m = Math.floor(s / 60),
+                        h = Math.floor(m / 60),
+                        mm = m % 60;
+                    if (mm < 10) {
+                        mm = "0" + mm;
+                    }
+                    if (h < 10) {
+                        h = "0" + h;
+                    }
+                    return h + ":" + mm;
+                },
+                displayTime: function (times) {
+                    var msecs = 0;
+                    times.forEach(function (time) {
+                        var start = new Date(time.start),
+                            end = new Date(time.end);
+                        if (!time.end) {
+                            end = new Date();
+                        }
+                        msecs += end - start;
+                    });
+                    return this.formatMilliseconds(msecs);
+                },
+                handleClick: function (e) {
+                    this.props.onTimerClicked()
+                },
                 render: function () {
                     return (
-                        <div className="pull-right timer">
-                            {this.props.currentTime}
+                        <div className="pull-right timer" onClick={this.handleClick}>
+                            {this.displayTime(this.props.project.times)}
                         </div>
                     );
                 }
             });
             var TimeEntry = React.createClass({
+                displayEntry: function (entry) {
+                    var start = new Date(entry.start);
+                    console.log(entry, entry.start, start)
+                    if (!entry.end) {
+                        return start + " – ";
+                    }
+                    return start + " – " + new Date(entry.end);
+                },
                 render: function () {
                     return (
-                        <li>{this.props.entry}</li>
+                        <li>{this.displayEntry(this.props.entry)}</li>
                     );
                 }
             });
@@ -303,6 +341,9 @@
                 handleClearTimes: function (e) {
                     this.props.onClearTimes(this.props.project);
                 },
+                handleTimerClicked: function (e) {
+                    this.props.onTimerClicked(this.props.project);
+                },
                 render: function () {
                     var classNameExtra = this.state.open ? "project open" : "project",
                         entries = [];
@@ -315,7 +356,7 @@
                                 <div className="pull-left project-name" onClick={this.handleProjectNameClick}>
                                     {this.props.project.name}
                                 </div>
-                                <ProjectTimer currentTime={this.props.project.currentTime} />
+                                <ProjectTimer project={this.props.project} onTimerClicked={this.handleTimerClicked} />
                             </div>
                             <div className="project-times row">
                                 <ul className="unstyled">
@@ -334,7 +375,7 @@
                     return {projects: PROJECTS};
                 },
                 handleProjectSubmit: function (projectName) {
-                    PROJECTS.push({name: projectName, currentTime: "00:00", times: []});
+                    PROJECTS.push({name: projectName, times: []});
                     this.setState({projects: PROJECTS});
                 },
                 handleDeleteProject: function (project) {
@@ -342,22 +383,45 @@
                     this.setState({projects: PROJECTS});
                 },
                 handleClearTimes: function (project) {
-                    var result = PROJECTS.some(function (row) {
-                        if (row.name === project.name) {
-                            row.times = [];
-                            return true;
-                        }
-                    });
-                    if (result) {
-                        this.setState({projects: PROJECTS});
+                    project.times = [];
+                    this.setState({projects: PROJECTS});
+                },
+                handleTimerClicked: function (project) {
+                    /*
+                     * Clicking on timer should:
+                     * 1. If it's active (has an end that is null), then set it to current time
+                     * 2. If it's inactive (has no times, or most recent end is not null):
+                     *    a. then add a new time entry with start as current time and end as null
+                     *    b. find any other project that might be active and mark it inactive by
+                     *       timestampping it's last end
+                     */
+                    var activePredicate = function (time) {return time.end === null;},
+                        active = project.times.some(activePredicate),
+                        stamp = (new Date()).valueOf(),
+                        entry = project.times[project.times.getIndexBy("end", null)];
+                    if (active) {
+                        entry.end = stamp;
+                    } else {
+                        project.times.push({start: stamp, end: null});
+                        PROJECTS.forEach(function (p) {
+                            if (p !== project) {
+                                var active = p.times.some(activePredicate),
+                                    entry = p.times[p.times.getIndexBy("end", null)];
+                                if (active) {
+                                    entry.end = stamp;
+                                }
+                            }
+                        });
                     }
+                    this.setState({projects: PROJECTS});
                 },
                 render: function () {
                     var projects = [],
                         handleClearTimes = this.handleClearTimes,
-                        handleDeleteProject = this.handleDeleteProject;
+                        handleDeleteProject = this.handleDeleteProject,
+                        handleTimerClicked = this.handleTimerClicked;
                     this.state.projects.forEach(function (project) {
-                        projects.push(<Project project={project} onClearTimes={handleClearTimes} onDeleteProject={handleDeleteProject} />)
+                        projects.push(<Project project={project} onClearTimes={handleClearTimes} onDeleteProject={handleDeleteProject} onTimerClicked={handleTimerClicked} />)
                     });
                     return (
                         <div className="holder">
@@ -371,10 +435,10 @@
             });
 
             var PROJECTS = [
-                {name: "Beacon", currentTime: "01:15", times: [{start: "00:15", end: "01:15"}, {start: "02:30", end: null}]},
-                {name: "Pinax", currentTime: "03:15", times: [{start: "00:15", end: "01:15"}, {start: "02:30", end: "04:45"}]},
-                {name: "Sales", currentTime: "01:00", times: [{start: "00:15", end: "01:15"}]},
-                {name: "Marketing", currentTime: "00:00", times: []},
+                {name: "Beacon", times: [{start: 1415120767496, end: 1415220867496}, {start: 1415210867496, end: null}]},
+                {name: "Pinax", times: [{start: 1415120467496, end: 1415220567496}, {start: 1415220667496, end: 1415220767496}]},
+                {name: "Sales", times: [{start: 1415021967496, end: 1415222067496}]},
+                {name: "Marketing", times: []},
             ];
             React.renderComponent(<Candelabra />, document.body);
         </script>
