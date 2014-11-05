@@ -434,7 +434,12 @@
                         handleDeleteProject = this.handleDeleteProject,
                         handleTimerClicked = this.handleTimerClicked;
                     this.state.projects.forEach(function (project) {
-                        projects.push(<Project project={project} onClearTimes={handleClearTimes} onDeleteProject={handleDeleteProject} onTimerClicked={handleTimerClicked} />)
+                        projects.push(
+                            <Project project={project}
+                                     onClearTimes={handleClearTimes}
+                                     onDeleteProject={handleDeleteProject}
+                                     onTimerClicked={handleTimerClicked} />
+                        )
                     });
                     return (
                         <div className="holder">
