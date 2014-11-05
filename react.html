@@ -236,7 +236,7 @@
                     var name = this.refs.projectName.getDOMNode().value.trim();
                     if (!name) return;
                     this.props.onProjectSubmit(name);
-                    this.refs.projectName.getDOMNode.value = "";  // @@@ not clearing
+                    this.refs.projectName.getDOMNode().value = "";
                     return;
                 },
                 render: function () {
