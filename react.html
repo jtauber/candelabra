@@ -351,14 +351,20 @@
                 handleTimerClicked: function (e) {
                     this.props.onTimerClicked(this.props.project);
                 },
+                projectClasses: function () {
+                    var activePredicate = function (time) {return time.end === null;},
+                        active = this.props.project.times.some(activePredicate),
+                        classes = this.state.open ? "project open" : "project";
+                    classes += active ? " active" : "";
+                    return classes
+                },
                 render: function () {
-                    var classNameExtra = this.state.open ? "project open" : "project",
-                        entries = [];
+                    var entries = [];
                     this.props.project.times.forEach(function (entry) {
                         entries.push(<TimeEntry entry={entry} />)
                     });
                     return (
-                        <div className={classNameExtra}>
+                        <div className={this.projectClasses()}>
                             <div className="project-header row">
                                 <div className="pull-left project-name" onClick={this.handleProjectNameClick}>
                                     {this.props.project.name}
