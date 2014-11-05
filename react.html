@@ -257,6 +257,24 @@
                 }
             });
             var ProjectTimer = React.createClass({
+                /*
+                 * The ProjectTimer calculates total time based on the series
+                 * of time entries.
+                 *
+                 * [{start: "01:15", end: "03:15"}] === "02:00"
+                 * [{start: "01:15", end: "03:15"}, {start: "04:00", end: "05:00"}] === "03:00"
+                 * [{start: "01:15", end: null}] === calculated time since "01:15"
+                 * [] === "00:00"
+                 *
+                 * NOTE: these are display values, the underlying data are js Date() objects
+                 *
+                 * Clicking on timer should:
+                 * 1. If it's active (has an end that is null), then set it to current time
+                 * 2. If it's inactive (has no times, or most recent end is not null):
+                 *    a. then add a new time entry with start as current time and end as null
+                 *    b. find any other project that might be active and mark it inactive by
+                 *       timestampping it's last end
+                 */
                 render: function () {
                     return (
                         <div className="pull-right timer">
