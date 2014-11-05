@@ -277,6 +277,13 @@
                  *
                  * NOTE: these are display values, the underlying data are js Date() objects
                  */
+                getInitialState: function () {
+                    return {now: new Date()};
+                },
+                componentDidMount: function() {
+                    var timer = this;
+                    setInterval(function() {timer.setState({now: new Date()})}, 10000);
+                },
                 formatMilliseconds: function(msecs) {
                     var s = Math.round(msecs / 1000),
                         m = Math.floor(s / 60),
@@ -291,12 +298,13 @@
                     return h + ":" + mm;
                 },
                 displayTime: function (times) {
-                    var msecs = 0;
+                    var msecs = 0,
+                        now = this.state.now;
                     times.forEach(function (time) {
                         var start = new Date(time.start),
                             end = new Date(time.end);
                         if (!time.end) {
-                            end = new Date();
+                            end = now;
                         }
                         msecs += end - start;
                     });
@@ -316,7 +324,6 @@
             var TimeEntry = React.createClass({
                 displayEntry: function (entry) {
                     var start = new Date(entry.start);
-                    console.log(entry, entry.start, start)
                     if (!entry.end) {
                         return start + " – ";
                     }
