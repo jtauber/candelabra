@@ -266,10 +266,13 @@
                 }
             });
             var ProjectHeader = React.createClass({
+                handleClick: function (e) {
+                    this.props.onProjectNameClick();
+                },
                 render: function () {
                     return (
                         <div className="project-header row">
-                            <div className="pull-left project-name">{this.props.project.name}</div>
+                            <div className="pull-left project-name" onClick={this.handleClick}>{this.props.project.name}</div>
                             <ProjectTimer currentTime={this.props.project.currentTime} />
                         </div>
                     );
@@ -332,14 +335,14 @@
                 getInitialState: function () {
                     return {open: false};
                 },
-                handleClick: function (e) {
+                handleProjectNameClick: function () {
                     this.setState({open: !this.state.open});
                 },
                 render: function () {
                     var classNameExtra = this.state.open ? "project open" : "project";
                     return (
-                        <div className={classNameExtra} onClick={this.handleClick}>
-                            <ProjectHeader project={this.props.project} />
+                        <div className={classNameExtra}>
+                            <ProjectHeader project={this.props.project} onProjectNameClick={this.handleProjectNameClick} />
                             <ProjectFooter project={this.props.project} />
                         </div>
                     );
