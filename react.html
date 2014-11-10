@@ -302,7 +302,7 @@
                     setInterval(function() {timer.setState({now: new Date()})}, 10000);
                 },
                 formatMilliseconds: function(msecs) {
-                    var s = Math.round(msecs / 1000),
+                    var s = Math.round(Math.max(msecs, 0) / 1000),
                         m = Math.floor(s / 60),
                         h = Math.floor(m / 60),
                         mm = m % 60;
