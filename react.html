@@ -236,6 +236,17 @@
                     }
                 }
             }
+            var guid = (function() {
+              function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                           .toString(16)
+                           .substring(1);
+              }
+              return function() {
+                return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                       s4() + '-' + s4() + s4() + s4();
+              };
+            })();
         </script>
         <script type="text/jsx">
             /** @jsx React.DOM */
@@ -384,20 +395,30 @@
                 }
             });
             var Candelabra = React.createClass({
-                getInitialState: function () {
-                    return {projects: PROJECTS};
+                storageKey: "candelabra-data",
+                componentWillMount: function () {
+                    var data = loadData("candelabra-data") || this.state;
+                    if (data) {
+                        this.setState(data);
+                    }
+                },
+                componentDidUpdate: function (prevProps, prevState) {
+                    setData(this.storageKey, this.state);
                 },
                 handleProjectSubmit: function (projectName) {
-                    PROJECTS.push({name: projectName, times: []});
-                    this.setState({projects: PROJECTS});
+                    var data = loadData(this.storageKey);
+                    data.projects.push({id: guid(), name: projectName, times: []});
+                    this.setState(data);
                 },
                 handleDeleteProject: function (project) {
-                    PROJECTS.splice(PROJECTS.indexOf(project), 1);
-                    this.setState({projects: PROJECTS});
+                    var data = loadData(this.storageKey);
+                    data.projects.splice(data.projects.getIndexBy("id", project.id), 1);
+                    this.setState(data);
                 },
                 handleClearTimes: function (project) {
-                    project.times = [];
-                    this.setState({projects: PROJECTS});
+                    var data = loadData(this.storageKey);
+                    data.projects[data.projects.getIndexBy("id", project.id)].times = [];
+                    this.setState(data);
                 },
                 handleTimerClicked: function (project) {
                     /*
@@ -409,6 +430,7 @@
                      *       timestampping it's last end
                      */
                     var activePredicate = function (time) {return time.end === null;},
+                        data = loadData(this.storageKey),
                         active = project.times.some(activePredicate),
                         stamp = (new Date()).valueOf(),
                         entry = project.times[project.times.getIndexBy("end", null)];
@@ -416,8 +438,8 @@
                         entry.end = stamp;
                     } else {
                         project.times.push({start: stamp, end: null});
-                        PROJECTS.forEach(function (p) {
-                            if (p !== project) {
+                        data.projects.forEach(function (p) {
+                            if (p.id !== project.id) {
                                 var active = p.times.some(activePredicate),
                                     entry = p.times[p.times.getIndexBy("end", null)];
                                 if (active) {
@@ -426,7 +448,8 @@
                             }
                         });
                     }
-                    this.setState({projects: PROJECTS});
+                    data.projects[data.projects.getIndexBy("id", project.id)] = project;
+                    this.setState(data);
                 },
                 render: function () {
                     var projects = [],
@@ -452,13 +475,24 @@
                 }
             });
 
-            var PROJECTS = [
-                {name: "Beacon", times: [{start: 1415120767496, end: 1415220867496}, {start: 1415210867496, end: null}]},
-                {name: "Pinax", times: [{start: 1415120467496, end: 1415220567496}, {start: 1415220667496, end: 1415220767496}]},
-                {name: "Sales", times: [{start: 1415021967496, end: 1415222067496}]},
-                {name: "Marketing", times: []},
-            ];
-            React.renderComponent(<Candelabra />, document.body);
+            var loadData = function (key) {
+                var state = localStorage.getItem(key);
+                if (state) {
+                    try {
+                        return JSON.parse(state);
+                    } catch (e) {
+                        if (console) {
+                            console.warn("Unable to load state from localStorage: ", state);
+                        }
+                    }
+                }
+                return {projects: []};
+            };
+            var setData = function (key, data) {
+                localStorage.setItem(key, JSON.stringify(data));
+            };
+
+            React.render(<Candelabra />, document.body);
         </script>
     </body>
 </html>
