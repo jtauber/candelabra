@@ -378,7 +378,7 @@
                 render: function () {
                     var entries = [];
                     this.props.project.times.forEach(function (entry) {
-                        entries.push(<TimeEntry entry={entry} />)
+                        entries.push(<TimeEntry key={entry.start} entry={entry} />)
                     });
                     return (
                         <div className={this.projectClasses()}>
@@ -464,7 +464,8 @@
                         handleTimerClicked = this.handleTimerClicked;
                     this.state.projects.forEach(function (project) {
                         projects.push(
-                            <Project project={project}
+                            <Project key={project.id}
+                                     project={project}
                                      onClearTimes={handleClearTimes}
                                      onDeleteProject={handleDeleteProject}
                                      onTimerClicked={handleTimerClicked} />
