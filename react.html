@@ -251,13 +251,19 @@
         <script type="text/jsx">
             /** @jsx React.DOM */
             var AddProjectForm = React.createClass({
+                getInitialState: function () {
+                    return {value: ""};
+                },
                 handleSubmit: function (e) {
                     e.preventDefault();
-                    var name = this.refs.projectName.getDOMNode().value.trim();
+                    var name = this.state.value.trim();
                     if (!name) return;
                     this.props.onProjectSubmit(name);
-                    this.refs.projectName.getDOMNode().value = "";
+                    this.setState({value: ""});
                     return;
+                },
+                handleChange: function (e) {
+                    this.setState({value: e.target.value});
                 },
                 render: function () {
                     return (
@@ -265,7 +271,7 @@
                             <table>
                                 <tr>
                                     <td className="project-name-column">
-                                        <input id="add-project-name" type="text" ref="projectName" />
+                                        <input id="add-project-name" type="text" value={this.state.value}  onChange={this.handleChange} />
                                     </td>
                                     <td className="add-button-column">
                                         <button id="add-project-button" className="btn">+ Project</button>
