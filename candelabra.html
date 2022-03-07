@@ -359,7 +359,9 @@
                         if (m < 10) {
                             m = "0" + m;
                         }
-                        $(".project-times ul li", previouslyActive).last().append(h + ":" + m).data("end", endDate.valueOf());
+                        var lastLi = $(".project-times ul li", previouslyActive).last();
+                        lastLi.append(h + ":" + m).data("end", endDate.valueOf());
+                        lastLi.on("click", onClickEdit); /* Start and End times become editable when timer ends */
                     }
                     updateTimers();
                     saveTimes();
@@ -385,56 +387,57 @@
                     var project = $(this).closest(".project");
                     project.toggleClass("editTimes");
                 });
-                $(".project-times li").on("click", function() {
-                    var project = $(this).closest(".project");
-                    var isEditTimes = project.hasClass("editTimes");
-                    if (!isEditTimes) {
-                        return;
-                    }
-                    project.removeClass("editTimes");
-                    var start = $(this).data("start");
-                    var end = $(this).data("end");
-                    var startDate = new Date(start).getDateTime();
-                    var endDate = new Date(end).getDateTime();
-                    var isModified = false;
+                $(".project-times li").on("click", onClickEdit);
+            }
+            function onClickEdit() {
+                var project = $(this).closest(".project");
+                var isEditTimes = project.hasClass("editTimes");
+                if (!isEditTimes) {
+                    return;
+                }
+                project.removeClass("editTimes");
+                var start = $(this).data("start");
+                var end = $(this).data("end");
+                var startDate = new Date(start).getDateTime();
+                var endDate = new Date(end).getDateTime();
+                var isModified = false;
 
-                    var newStart = window.prompt("Modify START date\n(Current=" + startDate + "):", startDate);
-                    if (newStart != null && newStart != "") {
-                        var newStartDate = new Date(newStart);
-                        if (!isDateValid(newStartDate)) {
-                            window.alert("Invalid date provided: " + newStart + "\nNo modifications made.");
-                            newStartDate = new Date(start);
-                        }
-                        else {
-                            $(this).data("start", newStartDate.valueOf());
-                            isModified = true;
-                        }
+                var newStart = window.prompt("Modify START date\n(Current=" + startDate + "):", startDate);
+                if (newStart != null && newStart != "") {
+                    var newStartDate = new Date(newStart);
+                    if (!isDateValid(newStartDate)) {
+                        window.alert("Invalid date provided: " + newStart + "\nNo modifications made.");
+                        newStartDate = new Date(start);
                     }
                     else {
-                        var newStartDate = new Date(start);
+                        $(this).data("start", newStartDate.valueOf());
+                        isModified = true;
                     }
-                    var newEnd = window.prompt("Modify END date\n(Current=" + endDate + "):", endDate);
-                    if (newEnd != null && newEnd != "") {
-                        var newEndDate = new Date(newEnd);
-                        if (!isDateValid(newEndDate)) {
-                            window.alert("Invalid date provided: " + newEnd + "\nNo modifications made.");
-                            newEndDate = new Date(end);
-                        }
-                        else {
-                            $(this).data("end", newEndDate.valueOf());
-                            isModified = true;
-                        }
+                }
+                else {
+                    var newStartDate = new Date(start);
+                }
+                var newEnd = window.prompt("Modify END date\n(Current=" + endDate + "):", endDate);
+                if (newEnd != null && newEnd != "") {
+                    var newEndDate = new Date(newEnd);
+                    if (!isDateValid(newEndDate)) {
+                        window.alert("Invalid date provided: " + newEnd + "\nNo modifications made.");
+                        newEndDate = new Date(end);
                     }
                     else {
-                        var newEndDate = new Date(end);
+                        $(this).data("end", newEndDate.valueOf());
+                        isModified = true;
                     }
+                }
+                else {
+                    var newEndDate = new Date(end);
+                }
 
-                    if (isModified == true) {
-                        $(this).html("");
-                        $(this).append(getTimeRange(newStartDate, newEndDate));
-                        doUpdate();
-                    }
-                });
+                if (isModified == true) {
+                    $(this).html("");
+                    $(this).append(getTimeRange(newStartDate, newEndDate));
+                    doUpdate();
+                }
             }
             function doUpdate() {
                 updateTimers();
