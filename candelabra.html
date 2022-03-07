@@ -110,6 +110,9 @@
                 -moz-box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
                 box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
             }
+            .editTimes .project-times li {
+                border: 2px solid red;
+            }
             .project .project-name:before {
                 content: "\25B8 \A0";
             }
@@ -210,14 +213,14 @@
             .bottom-bar button {
                 width: 100%;
             }
-            .clear-times, .delete-project {
+            .clear-times, .delete-project, .edit-times {
                 cursor: pointer;
                 float: right;
             }
             .separator {
                 float: right;
             }
-            .clear-times:hover {
+            .clear-times:hover, .edit-times:hover {
                 color: #666;
             }
             .delete-project:hover {
@@ -274,32 +277,13 @@
             function createProject(projectName) {
                 var project = $("<div class='project'></div>");
                 var projectHeader = $("<div class='project-header row'><div class='pull-left project-name'>" + projectName + "</div><div class='pull-right timer' data-time='0'>00:00</div></div");
-                var projectTimes = $("<div class='project-times row'><ul class='unstyled'></ul><span class='delete-project'>delete project</span><span class='separator'>&nbsp;&bull;&nbsp;</span><span class='clear-times'>clear times</span></div>");
+                var projectTimes = $("<div class='project-times row'><ul class='unstyled'></ul><span class='delete-project'>delete project</span><span class='separator'>&nbsp;&bull;&nbsp;</span><span class='edit-times'>edit times</span><span class='separator'>&nbsp;&bull;&nbsp;</span><span class='clear-times'>clear times</span></div>");
                 project.append(projectHeader);
                 project.append(projectTimes);
                 return project;
             }
             function createEntry(startDate, endDate) {
-                var sh = startDate.getHours();
-                if (sh < 10) {
-                    sh = "0" + sh;
-                }
-                var sm = startDate.getMinutes();
-                if (sm < 10) {
-                    sm = "0" + sm;
-                }
-                var timeRange = sh + ":" + sm + " &ndash; ";
-                if (endDate) {
-                    var eh = endDate.getHours();
-                    if (eh < 10) {
-                        eh = "0" + eh;
-                    }
-                    var em = endDate.getMinutes();
-                    if (em < 10) {
-                        em = "0" + em;
-                    }
-                    timeRange += eh + ":" + em;
-                }
+                var timeRange = getTimeRange(startDate, endDate);
                 var entry = $("<li>" + timeRange + "</li>").data("start", startDate.valueOf());
                 if (endDate) {
                     entry.data("end", endDate.valueOf());
@@ -397,6 +381,60 @@
                     project.removeClass("active");
                     updateTimers();
                 });
+                $(".edit-times").on("click", function() {
+                    var project = $(this).closest(".project");
+                    project.toggleClass("editTimes");
+                });
+                $(".project-times li").on("click", function() {
+                    var project = $(this).closest(".project");
+                    var isEditTimes = project.hasClass("editTimes");
+                    if (!isEditTimes) {
+                        return;
+                    }
+                    project.removeClass("editTimes");
+                    var start = $(this).data("start");
+                    var end = $(this).data("end");
+                    var startDate = new Date(start).getDateTime();
+                    var endDate = new Date(end).getDateTime();
+                    var isModified = false;
+
+                    var newStart = window.prompt("Modify START date\n(Current=" + startDate + "):", startDate);
+                    if (newStart != null && newStart != "") {
+                        var newStartDate = new Date(newStart);
+                        if (!isDateValid(newStartDate)) {
+                            window.alert("Invalid date provided: " + newStart + "\nNo modifications made.");
+                            newStartDate = new Date(start);
+                        }
+                        else {
+                            $(this).data("start", newStartDate.valueOf());
+                            isModified = true;
+                        }
+                    }
+                    else {
+                        var newStartDate = new Date(start);
+                    }
+                    var newEnd = window.prompt("Modify END date\n(Current=" + endDate + "):", endDate);
+                    if (newEnd != null && newEnd != "") {
+                        var newEndDate = new Date(newEnd);
+                        if (!isDateValid(newEndDate)) {
+                            window.alert("Invalid date provided: " + newEnd + "\nNo modifications made.");
+                            newEndDate = new Date(end);
+                        }
+                        else {
+                            $(this).data("end", newEndDate.valueOf());
+                            isModified = true;
+                        }
+                    }
+                    else {
+                        var newEndDate = new Date(end);
+                    }
+
+                    if (isModified == true) {
+                        $(this).html("");
+                        $(this).append(getTimeRange(newStartDate, newEndDate));
+                        doUpdate();
+                    }
+                });
             }
             function doUpdate() {
                 updateTimers();
@@ -421,6 +459,42 @@
                 });
                 setInterval("doUpdate()", 10000);
             });
+            Date.prototype.getDateTime = function() {
+                /* Credit: Rion Williams - https://stackoverflow.com/questions/17972971/javascript-output-date-in-correct-format */
+                var yyyy = this.getFullYear().toString();
+                var MM = (this.getMonth()+1).toString();
+                var dd  = this.getDate().toString();
+                var hh = this.getHours().toString();
+                var mm = this.getMinutes().toString();
+                var ss = this.getSeconds().toString();
+                return yyyy + '-' + (MM[1]?MM:"0"+MM[0]) + '-' + (dd[1]?dd:"0"+dd[0]) + ' ' + (hh[1]?hh:"0"+hh[0]) + ':' + (mm[1]?mm:"0"+mm[0]) + ':' + (ss[1]?ss:"0"+ss[0]);
+            };
+            function isDateValid(date) {
+                return (date instanceof Date && !isNaN(date.valueOf()));
+            };
+            function getTimeRange(startDate, endDate) {
+                var sh = startDate.getHours();
+                if (sh < 10) {
+                    sh = "0" + sh;
+                }
+                var sm = startDate.getMinutes();
+                if (sm < 10) {
+                    sm = "0" + sm;
+                }
+                timeRange = sh + ":" + sm + " &ndash; ";
+                if (endDate) {
+                    var eh = endDate.getHours();
+                    if (eh < 10) {
+                        eh = "0" + eh;
+                    }
+                    var em = endDate.getMinutes();
+                    if (em < 10) {
+                        em = "0" + em;
+                    }
+                    timeRange += eh + ":" + em;
+                }
+                return timeRange;
+            };
         </script>
     </body>
 </html>
