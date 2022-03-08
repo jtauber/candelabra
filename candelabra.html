@@ -397,7 +397,10 @@
                 });
                 $(".project-times li").on("click", onClickEdit);
             }
-            function onClickEdit() {
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            async function onClickEdit() {
                 var project = $(this).closest(".project");
                 var isEditTimes = project.hasClass("editTimes");
                 if (!isEditTimes) {
@@ -411,6 +414,7 @@
                 var endDate = new Date(end).getDateTime();
                 var isModified = false;
 
+                await sleep(100);
                 var newStart = window.prompt("Modify START date\n(Current=" + startDate + "):", startDate);
                 if (newStart != null && newStart != "") {
                     var newStartDate = new Date(newStart);
