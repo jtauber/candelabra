@@ -85,7 +85,7 @@
                 line-height: 1.5em;
             }
             .project.active .project-header {
-                color: #000;
+                color: red;
                 font-weight: bold;
             }
             .project-header .timer:hover {
@@ -110,7 +110,10 @@
                 -moz-box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
                 box-shadow: inset 0px 2px 2px 1px rgba(0, 0, 0, 0.2);
             }
-            .editTimes .project-times li {
+            .editTimes .project-times ul {
+                border: 2px solid red;
+            }
+            .project-times li.editTimes {
                 border: 2px solid red;
             }
             .project .project-name:before {
@@ -121,6 +124,11 @@
             }
             .project.open .project-name:before {
                 content: "\25BE \A0";
+            }
+            .project.editTimes .project-name:after {
+                content: "Click on a \"start - end\" time to edit";
+                color: red;
+                margin-left: 15px;
             }
             .bottom-bar {
                 background: #EEE;
@@ -396,6 +404,7 @@
                     return;
                 }
                 project.removeClass("editTimes");
+                $(this).addClass("editTimes");
                 var start = $(this).data("start");
                 var end = $(this).data("end");
                 var startDate = new Date(start).getDateTime();
@@ -438,6 +447,7 @@
                     $(this).append(getTimeRange(newStartDate, newEndDate));
                     doUpdate();
                 }
+                $(this).removeClass("editTimes");
             }
             function doUpdate() {
                 updateTimers();
